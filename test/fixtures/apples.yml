@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  group_id: 1
+  day_id: 1
+  clock_id: 1
+  even: false
+  odd: false
+  teacher: MyString
+  course: MyString
+  room: MyString
+
+two:
+  group_id: 1
+  day_id: 1
+  clock_id: 1
+  even: false
+  odd: false
+  teacher: MyString
+  course: MyString
+  room: MyString

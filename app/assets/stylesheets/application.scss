@@ -1,0 +1,103 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+@import "bootstrap";
+
+body{
+    background: #ccc;
+    padding: 15px;
+}
+a:hover{
+    background-color: transparent;
+}
+
+
+
+
+.group_name{
+    font-weight: bold;
+    font-size: 20px;
+
+    background: black;
+    color: ivory;
+    padding: 2px 4px;
+}
+.row_center{
+    display: flex;
+    justify-content: center;
+}
+.breaker{
+    margin-top: 0px;
+    margin-bottom: 34px;
+}
+
+.btn{
+    margin-top: 17px;
+    margin-bottom: 7px;
+
+    font-size: 21px;
+}
+.ttile{
+    padding: 15px;
+}
+
+
+table.schedule{
+    line-height: 0;
+    font-size: 25px;
+}
+table.schedule td{
+    font-size: 18px;
+    border: 1px solid black;
+    padding: 5px 10px;
+}
+
+.full_div{
+    text-align: center;
+    font-size: 17px;
+    line-height: 17px;
+}
+
+.full_div.extended{
+    user-select: none;
+    opacity: 0;
+}
+.full_div.extended div{
+    user-select: none;
+}
+
+.centered{
+    display: flex;
+    justify-content: center;
+}
+.ww{
+    display: flex;
+    justify-content: space-around;
+    padding: 0 25px;
+}
+.row.extended{
+    margin: 14px 0;
+}
+.notice{
+    color: white;
+    background: green;
+}
+.error{
+    color: white;
+    background: red;
+}
+.error, .notice{
+    border-radius: 2px;
+}

@@ -1,0 +1,218 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <%= link_to "Факультеты", faculties_path %>    
+    </div>
+    <div class="col-md-12">
+      <%= link_to "Кафедры", departments_path %>    
+    </div>
+    <div class="col-md-12">
+      <%= link_to "Группы", groups_path %>    
+    </div>
+  </div>
+</div>
+<hr />
+  
+    
+    <div class="container">
+      <div class="row centered" style="text-decoration:underline;font-size: 32px;margin-bottom: 15px;">Создайте расписание</div>
+      <div class="row centered">
+        <div class="col-md-6">
+          <%= form_tag '/post_schedule', method: 'post' do %>
+
+          
+            <div class="row extended">
+              <div class="col-md-12">
+                <%= select_tag 'faculty_id', options_for_select(@faculties), {include_blank: 'Выбрать факультет', class: 'form-control'} %>
+              </div>
+            </div>
+            <div class="row extended">
+              <div class="col-md-12">
+                <select id="department_id" name="department_id" class="form-control">
+                  <option value="">Выбрать кафедру</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="row extended">
+              <div class="col-md-12">
+                <select id="group_id" name="group_id" class="form-control">
+                  <option value="">Выбрать группу</option>
+                </select>
+              </div>
+            </div>
+          
+          
+          
+
+
+          <hr style="width:90%"/>
+          <div class="row extended">
+            <div class="col-md-12 ww">
+                <% @days.each do |day| %>
+                  <%= check_box_tag "days[#{day[1]}]", "#{day[0]}" %><span class="inactive modulus"><%= day[0] %></span>
+                <% end %>
+              </div>
+          </div>
+          <hr style="width:90%"/>
+          <div class="row extended">
+            <div class="col-md-12">
+              <%= select_tag "clock_id", options_for_select(@clocks), {include_blank: 'Выбрать время', class: 'form-control'} %>
+            </div>
+          </div>
+          <div class="row extended">
+            <div class="col-md-12">
+              <%= text_field_tag 'teacher', '' , class: 'form-control', placeholder: 'Преподаватель' %>
+            </div>
+          </div>
+          <div class="row extended">
+            <div class="col-md-12">
+              <%= text_field_tag 'course', '' , class: 'form-control', placeholder: 'Предмет' %>
+            </div>
+          </div>
+          <div class="row extended">
+            <div class="col-md-12">
+              <%= text_field_tag 'room', '' , class: 'form-control', placeholder: 'Аудитория' %>
+            </div>
+          </div>
+          <hr style="width:90%"/>
+          <div class="row extended" style="padding: 0 25px;">
+            <div class="col-md-6" style="display:flex;flex-direction:column;justify-content:center;align-items:flex-start">
+              <div>
+                <%= radio_button_tag 'parz', 'even' %><span class="inactive" id="parz_even_label">Только парные недели</span>
+              </div>
+              <div>
+                <%= radio_button_tag 'parz', 'odd' %><span class="inactive" id="parz_odd_label">Только непарные</span>
+              </div>
+            </div>
+            <div class="col-md-6" style="display:flex;justify-content:flex-end;align-items:center">
+              <button id="flush" class="btn btn-warning">Очистить</button>
+            </div>
+          </div>
+          <hr style="width:90%"/>
+
+
+          <div class="row">
+            <div class="col-md-12">
+              <%= submit_tag 'Опубликовать', class: 'form-control btn btn-primary'%>
+            </div>
+          </div>
+
+          <div class="row centered">
+            <div class="col-md-10 text-center notice">
+              <%= notice %>
+            </div>
+            <div class="col-md-10 text-center error">
+              <%= flash[:error] %>
+            </div>
+          </div>
+          <% end %>
+
+        </div>
+      </div>
+    </div>
+</div>
+
+<script>
+flush.onclick = function(e){
+  e.preventDefault()
+  parz_even.checked = false
+  parz_odd.checked = false
+}
+
+parz_even_label.onclick = function(){
+  parz_even.checked = true
+}
+parz_odd_label.onclick = function(){
+  parz_odd.checked = true
+}
+
+let spans = [...document.querySelectorAll('.modulus')]
+spans.map(item => {
+  item.onclick = function(){
+    item.previousSibling.checked ? item.previousSibling.checked = false : item.previousSibling.checked = true
+    
+  }
+  console.log(item, item.previousSibling)
+})
+
+
+faculty_id.onchange = function(){
+    let faculty_id = this.value
+    if (faculty_id && faculty_id != ''){
+        fetch(`http://localhost:3000/get_departments_by_faculty?faculty_id=${faculty_id}`)
+            .then(response => response.json())
+            .then(data => data.map(department => {
+
+                let select = document.getElementById('group_id')
+                let l = select.children.length
+                if (l > 1){
+                    for(let i = 1; i < l; i++){
+                        select.children[i].remove()
+                    }
+                }
+                
+                select = document.getElementById('department_id')
+                l = select.children.length
+                if (l > 1){
+                    for(let i = 1; i < l; i++){
+                        select.children[i].remove()
+                    }
+                }
+                
+                let option = document.createElement("option")
+                option.text = department.name
+                option.value = department.id
+                department_id.add(option)
+            }))
+    }
+    else{
+      let select = document.getElementById('group_id')
+        let l = select.children.length
+        if (l > 1){
+            for(let i = 1; i < l; i++){
+                select.children[i].remove()
+            }
+        }
+        
+        select = document.getElementById('department_id')
+        l = select.children.length
+        if (l > 1){
+            for(let i = 1; i < l; i++){
+                select.children[i].remove()
+            }
+        }
+        
+    }
+}
+department_id.onchange = function(){
+    let department_id = this.value
+    if (department_id && department_id != ''){
+        fetch(`http://localhost:3000/get_groups_by_department?department_id=${department_id}`)
+            .then(response => response.json())
+            .then(data => data.map(group => {
+                let option = document.createElement("option")
+                option.text = `${group.name}${group.number}`
+                option.value = group.id
+                group_id.add(option)
+            }))
+    }
+    else{
+        let select = document.getElementById('group_id')
+        let l = select.children.length
+        if (l > 1){
+            for(let i = 1; i < l; i++){
+                select.children[i].remove()
+            }
+        }
+        
+    }
+}
+</script>
+
+<style>
+.inactive{
+  user-select: none;
+}
+
+</style>

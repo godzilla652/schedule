@@ -1,0 +1,112 @@
+<div class="container">
+<%= form_tag '/public_final', method: 'get' do %>
+    <div class="row" style="display:flex;flex-direction:column; align-items:center;margin-bottom: 4px">
+        <div class="col-md-4 text-center" style="margin-bottom:33px;font-size:26px;text-decoration:underline">
+            Выберите необходимую группу
+        </div>
+        <div class="col-md-4" style="margin-bottom: 7px">
+            <%= select_tag 'faculty_id', options_for_select(@faculties), {include_blank: 'Выбрать факультет', class: 'form-control'} %>
+        </div>
+        <div class="col-md-4" style="margin-bottom: 7px">
+            <select id="department_id" name="department_id" class="form-control">
+                <option value="">Выбрать кафедру</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select id="group_id" name="group_id" class="form-control">
+                <option value="">Выбрать группу</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="row row_center">
+        <div class="col-md-3">
+            <%= submit_tag 'Смотреть расписание', class: 'form-control btn btn-primary'%>
+        </div>
+        </div>
+<% end %>
+</div>
+
+
+<script>
+faculty_id.onchange = function(){
+    let faculty_id = this.value
+    if (faculty_id && faculty_id != ''){
+        fetch(`http://localhost:3000/get_departments_by_faculty?faculty_id=${faculty_id}`)
+            .then(response => response.json())
+            .then(data => data.map(department => {
+                
+            let select = document.getElementById('group_id')
+                let l = select.children.length
+                if (l > 1){
+                    for(let i = 1; i < l; i++){
+                        select.children[i].remove()
+                    }
+                }
+                
+                select = document.getElementById('department_id')
+                l = select.children.length
+                if (l > 1){
+                    for(let i = 1; i < l; i++){
+                        select.children[i].remove()
+                    }
+                }
+
+                let option = document.createElement("option")
+                option.text = department.name
+                option.value = department.id
+                department_id.add(option)
+            }))
+    }
+    else{
+        let select = document.getElementById('group_id')
+        let l = select.children.length
+        if (l > 1){
+            for(let i = 1; i < l; i++){
+                select.children[i].remove()
+            }
+        }
+        
+        select = document.getElementById('department_id')
+        l = select.children.length
+        if (l > 1){
+            for(let i = 1; i < l; i++){
+                select.children[i].remove()
+            }
+        }
+        
+    }
+}
+department_id.onchange = function(){
+    let department_id = this.value
+    if (department_id && department_id != ''){
+        fetch(`http://localhost:3000/get_groups_by_department?department_id=${department_id}`)
+            .then(response => response.json())
+            .then(data => data.map(group => {
+                let option = document.createElement("option")
+                option.text = `${group.name}${group.number}`
+                option.value = group.id
+                group_id.add(option)
+            }))
+    }
+    else{
+        let select = document.getElementById('group_id')
+        let l = select.children.length
+        if (l > 1){
+            for(let i = 1; i < l; i++){
+                select.children[i].remove()
+            }
+        }
+        
+    }
+}
+</script>
+
+
+<style>
+body{
+    width: 100vw;
+    height: 50vh;
+
+}
+</style>

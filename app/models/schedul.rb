@@ -1,0 +1,2 @@
+class Schedul < ApplicationRecord
+end

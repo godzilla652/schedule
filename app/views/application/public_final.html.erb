@@ -1,0 +1,80 @@
+
+
+<table class="schedule">
+<tr>
+  <td class="group" colspan="9">
+    <%= @group.fullname %>
+  </td>
+</tr>
+<tr>
+  <td>
+    
+  </td>
+  <% @clocks.each do |clock| %>
+    <td class="text-center" style="color:ivory;background:#222"><%= clock.name %></td>
+  <% end %>
+</tr>
+<% @days.each do |day| %>
+<tr style="height: 135px">
+    <td class="text-left" style="color:ivory;background:#222">
+        <%= day.name %>
+    </td>
+    <% @clocks.each do |clock| %>
+    <td style="width: 135px;padding: 0px;">
+    <% current = Schedul.where(group_id: @group.id, day_id: day.id, clock_id: clock.id) %>
+    <% count = Schedul.where(group_id: @group.id, day_id: day.id, clock_id: clock.id).count %>
+    <% if count == 1 && !current.first.even && !current.first.odd %>
+        <div style="text-align:center;font-size:17px;line-height:17px">
+            <div><%= current.first.teacher %></div>
+            <div><%= current.first.course %></div>
+            <div><%= current.first.room %></div>
+        </div>
+    <% elsif count == 1 && current.first.even %>
+        <div class="full_div">
+            <div><%= current.first.teacher %></div>
+            <div><%= current.first.course %></div>
+            <div><%= current.first.room %></div>
+        </div>
+        <hr style="margin: 7px 0;background: black" />   
+        <div class="full_div extended">
+            <div><%= "sample" %></div>
+            <div><%= "sample" %></div>
+            <div><%= "sample" %></div>
+        </div>
+    <% elsif count == 1 && current.first.odd %>
+        <div class="full_div extended">
+            <div><%= "sample" %></div>
+            <div><%= "sample" %></div>
+            <div><%= "sample" %></div>
+        </div>
+        <hr style="margin: 7px 0;background: black" />   
+        <div class="full_div">
+            <div><%= current.first.teacher %></div>
+            <div><%= current.first.course %></div>
+            <div><%= current.first.room %></div>
+        </div>
+    <% elsif count == 2 %>
+        <div class="full_div top">
+            <div><%= current.where(even: true).first.teacher %></div>
+            <div><%= current.where(even: true).first.course %></div>
+            <div><%= current.where(even: true).first.room %></div>
+        </div>
+        <hr style="margin: 7px 0;background: black" />        
+        <div class="full_div bot">
+            <div><%= current.where(odd: true).first.teacher %></div>
+            <div><%= current.where(odd: true).first.course %></div>
+            <div><%= current.where(odd: true).first.room %></div>
+        </div>
+    <% end %>
+    </td>
+    <% end %>
+</tr>
+<% end %>
+</table> 
+
+
+<style>
+.schedule{
+
+}
+</style>
