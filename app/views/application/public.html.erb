@@ -1,5 +1,5 @@
 <div class="container">
-<%= form_tag '/public_final', method: 'get' do %>
+<%= form_tag '/public_final', id: 'req_form', method: 'get' do %>
     <div class="row" style="display:flex;flex-direction:column; align-items:center;margin-bottom: 4px">
         <div class="col-md-4 text-center" style="margin-bottom:33px;font-size:26px;text-decoration:underline">
             Выберите необходимую группу
@@ -20,19 +20,31 @@
     </div>
     
     <div class="row row_center">
-        <div class="col-md-3">
-            <%= submit_tag 'Смотреть расписание', class: 'form-control btn btn-primary'%>
+        <div class="row row_center">
+            <div class="col-md-12">
+                <%= submit_tag 'Смотреть расписание', class: 'form-control btn btn-primary', id: 'submit_form'%>
+            </div>
         </div>
-        </div>
+    </div>
+    <div id="notice_text" style="text-align:center"></div>
 <% end %>
 </div>
 
 
 <script>
+submit_form.onclick = function(e){
+    e.preventDefault()
+    if (faculty_id.value != "" && department_id.value != "" && group_id.value != ""){
+        req_form.submit()
+    }
+    else{
+        notice_text.textContent = 'Неверно заполнена форма'
+    }
+}
 faculty_id.onchange = function(){
     let faculty_id = this.value
     if (faculty_id && faculty_id != ''){
-        fetch(`http://localhost:3000/get_departments_by_faculty?faculty_id=${faculty_id}`)
+        fetch("<%= root_url %>" + `get_departments_by_faculty?faculty_id=${faculty_id}`)
             .then(response => response.json())
             .then(data => data.map(department => {
                 
@@ -80,7 +92,7 @@ faculty_id.onchange = function(){
 department_id.onchange = function(){
     let department_id = this.value
     if (department_id && department_id != ''){
-        fetch(`http://localhost:3000/get_groups_by_department?department_id=${department_id}`)
+        fetch("<%= root_url %>" + `get_groups_by_department?department_id=${department_id}`)
             .then(response => response.json())
             .then(data => data.map(group => {
                 let option = document.createElement("option")

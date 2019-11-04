@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  get '/test', to: 'application#test'
-
   root 'application#public'
   get '/admin', to: 'application#admin'
   
@@ -24,8 +22,5 @@ Rails.application.routes.draw do
   get '/get_departments_by_faculty', to: 'application#get_departments_by_faculty'
   get '/get_groups_by_department', to: 'application#get_groups_by_department'
   
-  get '/login', to: 'application#login'  
-  post '/login_proc', to: 'application#login_proc'
   
-  post '/set_new_pwd', to: 'application#set_new_pwd'
 end

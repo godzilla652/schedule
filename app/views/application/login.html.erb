@@ -1,0 +1,36 @@
+<div class='container' style='width:100vw;height:60vh;display:flex;flex-direction:column;justify-content:center;align-items:center'>
+  <div>
+    <%= form_tag '/login_proc', method: 'post', id: 'private' do %>
+      <div id='pwd' class='col-md-12'><%= password_field_tag 'password'%></div>
+    <% end %>
+  </div>
+  <div><%= notice %></div>
+</div>
+
+
+<script>
+  let name = document.getElementById('username')
+  let pwd = document.getElementById('password')
+
+  let components = [name, pwd]
+  function check(){
+
+    if (!isBlank(name.value) && !isBlank(pwd.value)){
+      return true
+    }
+    else{
+      return false
+    }
+  }	
+  function isBlank(str) {
+      return (!str || /^\s*$/.test(str));
+  }
+
+  components.map(function(item){
+    item.onkeypress = function(e){
+      if (e.keyCode == 13 && check()){
+        private.submit()
+      }      
+    }
+  })
+</script>

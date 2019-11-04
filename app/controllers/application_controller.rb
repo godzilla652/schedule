@@ -1,15 +1,20 @@
 class ApplicationController < ActionController::Base
-
+  before_action :check_user, except: [:public, :public_final, :login, :login_proc, :get_departments_by_faculty, :get_groups_by_department, :test]
   
+def test
+  p '#'*50
+  puts "#{root_url}"
+  p '#'*50
+end  
 
   def public
     @faculties = Faculty.all.collect {|t| [t.name, t.id]}
   end
 
   def public_final
-    @group = Group.find(params[:group_id])
-    @days = Day.all
-    @clocks = Clock.all
+      @group = Group.find(params[:group_id])
+      @days = Day.all
+      @clocks = Clock.all
   end 
 
   def get_departments_by_faculty
@@ -24,14 +29,35 @@ class ApplicationController < ActionController::Base
   end
   
 
+  def login
+  end
+  def login_proc
+    if User.where(name: 'admin').first.authenticate(params[:password])
+      cookies.signed[:schedule] = 'admin'
+      redirect_to '/admin'
+    elsif
+      flash[:notice] = 'Вы не авторизированы'
+      redirect_to '/login'
+    end
+  end
 
   def admin
+    
     @groups = Group.all.collect {|t| [t.fullname, t.id]}
     @days = Day.all.collect {|t| [t.name, t.id]}
     @clocks = Clock.all.collect {|t| [t.name, t.id]}
     @faculties = Faculty.all.collect {|t| [t.name, t.id]}
   end
-
+  
+  def set_new_pwd
+    pwd = params[:password]
+    if pwd && !pwd.blank?
+      User.where(name: 'admin').first.update(password: pwd)
+      render :plain => 'Password successfully updated'
+    elsif
+      render :plain => 'Error'
+    end
+  end
 
   
   def post_schedule
@@ -115,7 +141,13 @@ class ApplicationController < ActionController::Base
     redirect_to '/admin'
   end
 
-
+  private
+  def check_user
+    if cookies.signed[:schedule].nil?
+      flash[:notice] = 'Вы не авторизированы'
+      redirect_to '/login'
+    end
+  end
 
 end
 

@@ -1,5 +1,6 @@
 <div class="container">
   <div class="row">
+    <div class="col-md-6">
     <div class="col-md-12">
       <%= link_to "Факультеты", faculties_path %>    
     </div>
@@ -8,6 +9,15 @@
     </div>
     <div class="col-md-12">
       <%= link_to "Группы", groups_path %>    
+    </div>
+    </div>
+    <div class="col-md-6">
+    <div class="col-md-12">
+      <div id='change_pwd' style="color:#555;cursor:pointer;user-select:none" class="text-right">Сменить пароль</div>
+    </div>
+    <div class="col-md-12">
+      <div id='pwd_status' class="text-right"></div>
+    </div>
     </div>
   </div>
 </div>
@@ -133,14 +143,13 @@ spans.map(item => {
     item.previousSibling.checked ? item.previousSibling.checked = false : item.previousSibling.checked = true
     
   }
-  console.log(item, item.previousSibling)
 })
 
 
 faculty_id.onchange = function(){
     let faculty_id = this.value
     if (faculty_id && faculty_id != ''){
-        fetch(`http://localhost:3000/get_departments_by_faculty?faculty_id=${faculty_id}`)
+        fetch("<%= root_url %>" + `get_departments_by_faculty?faculty_id=${faculty_id}`)
             .then(response => response.json())
             .then(data => data.map(department => {
 
@@ -188,7 +197,7 @@ faculty_id.onchange = function(){
 department_id.onchange = function(){
     let department_id = this.value
     if (department_id && department_id != ''){
-        fetch(`http://localhost:3000/get_groups_by_department?department_id=${department_id}`)
+        fetch("<%= root_url %>" + `get_groups_by_department?department_id=${department_id}`)
             .then(response => response.json())
             .then(data => data.map(group => {
                 let option = document.createElement("option")
@@ -208,7 +217,31 @@ department_id.onchange = function(){
         
     }
 }
+
+change_pwd.onclick = function(){
+  var pwd = prompt("Введите новый пароль")
+    console.log(JSON.stringify({password: pwd}))
+    if (pwd != null) {
+      console.log(document.querySelector("meta[name=csrf-token]").content)
+      fetch("<%= root_url %>" + `set_new_pwd`, {
+        method: 'POST',
+        headers: {'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content, 'Content-Type':'application/json'},
+        body: JSON.stringify({password: pwd}),
+      }).then(data => data.text()).then(text => {
+        
+        let item = document.getElementById('pwd_status')
+        item.textContent = text
+      })
+
+//    fetch("<%= root_url %>" + `set_new_pwd`, {password: pwd}).then(data => data.text()).then(text => console.log(text))
+    } 
+}
+
+
 </script>
+
+
+
 
 <style>
 .inactive{

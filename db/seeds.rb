@@ -22,3 +22,5 @@ Clock.create(name: '16:40-18:00')
 Clock.create(name: '18:10-19:30')
 Clock.create(name: '19:40-21:00')
 
+
+User.create(name: 'admin', password: 'admin')
