@@ -18,15 +18,22 @@
     <div class="col-md-12">
       <div id='pwd_status' class="text-right"></div>
     </div>
+    <div class="col-md-12">
+      <div id='quit' style="color:#555;cursor:pointer;user-select:none" class="text-right">
+        <a href="/quit">Выйти</a>
+      </div>
+    </div>
     </div>
   </div>
 </div>
 <hr />
   
     
-    <div class="container">
-      <div class="row centered" style="text-decoration:underline;font-size: 32px;margin-bottom: 15px;">Создайте расписание</div>
-      <div class="row centered">
+    <div class="container-fluid">
+      <div class='row'>
+        <div class="col-md-6">
+          <div class="row centered" style="text-decoration:underline;font-size: 32px;margin-bottom: 15px;">Создайте расписание</div>
+          <div class="row centered">
         <div class="col-md-6">
           <%= form_tag '/post_schedule', method: 'post' do %>
 
@@ -89,10 +96,10 @@
           <div class="row extended" style="padding: 0 25px;">
             <div class="col-md-6" style="display:flex;flex-direction:column;justify-content:center;align-items:flex-start">
               <div>
-                <%= radio_button_tag 'parz', 'even' %><span class="inactive" id="parz_even_label">Только парные недели</span>
+                <%= radio_button_tag 'parz', 'even' %><span class="inactive" id="parz_even_label">Парные</span>
               </div>
               <div>
-                <%= radio_button_tag 'parz', 'odd' %><span class="inactive" id="parz_odd_label">Только непарные</span>
+                <%= radio_button_tag 'parz', 'odd' %><span class="inactive" id="parz_odd_label">Непарные</span>
               </div>
             </div>
             <div class="col-md-6" style="display:flex;justify-content:flex-end;align-items:center">
@@ -100,13 +107,15 @@
             </div>
           </div>
           <hr style="width:90%"/>
-
+            
 
           <div class="row">
             <div class="col-md-12">
               <%= submit_tag 'Опубликовать', class: 'form-control btn btn-primary'%>
             </div>
           </div>
+          
+
 
           <div class="row centered">
             <div class="col-md-10 text-center notice">
@@ -121,6 +130,100 @@
         </div>
       </div>
     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <div class="col-md-6">
+        <div class="row centered" style="text-decoration:underline;font-size: 32px;margin-bottom: 15px;">Удалить пару из расписания</div>
+        <div class="row centered">
+        <div class="col-md-6">
+          <%= form_tag '/delete_schedule', method: 'post' do %>
+
+          
+            <div class="row extended">
+              <div class="col-md-12">
+                <%= select_tag 'delete_faculty_id', options_for_select(@faculties), {include_blank: 'Выбрать факультет', class: 'form-control'} %>
+              </div>
+            </div>
+            <div class="row extended">
+              <div class="col-md-12">
+                <select id="delete_department_id" name="delete_department_id" class="form-control">
+                  <option value="">Выбрать кафедру</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="row extended">
+              <div class="col-md-12">
+                <select id="delete_group_id" name="delete_group_id" class="form-control">
+                  <option value="">Выбрать группу</option>
+                </select>
+              </div>
+            </div>
+
+          <hr style="width:90%"/>
+          <div class="row extended">
+            <div class="col-md-12">
+              <%= select_tag "delete_day_id", options_for_select(@days), {include_blank: 'Выбрать день', class: 'form-control'} %>
+            </div>
+          </div>
+          <div class="row extended">
+            <div class="col-md-12">
+              <%= select_tag "delete_clock_id", options_for_select(@clocks), {include_blank: 'Выбрать время', class: 'form-control'} %>
+            </div>
+          </div>
+          
+          <hr style="width:90%"/>
+          <div class="row extended" style="padding: 0 25px;">
+            <div class="col-md-6" style="display:flex;flex-direction:column;justify-content:center;align-items:flex-start">
+              <div>
+                <%= radio_button_tag 'delete_parz', 'even' %><span class="inactive" id="delete_parz_even_label">Парные</span>
+              </div>
+              <div>
+                <%= radio_button_tag 'delete_parz', 'odd' %><span class="inactive" id="delete_parz_odd_label">Непарные</span>
+              </div>
+            </div>
+            <div class="col-md-6" style="display:flex;justify-content:flex-end;align-items:center">
+              <button id="delete_flush" class="btn btn-warning">Очистить</button>
+            </div>
+          </div>
+          <hr style="width:90%"/>
+            
+
+          <div class="row">
+            <div class="col-md-12">
+              <%= submit_tag 'Удалить', class: 'form-control btn btn-danger'%>
+            </div>
+          </div>
+          
+
+
+          <div class="row centered">
+            <div class="col-md-10 text-center notice">
+              <%= flash[:delete_success] %>
+            </div>
+            <div class="col-md-10 text-center error">
+              <%= flash[:delete_error] %>
+            </div>
+          </div>
+          <% end %>
+
+        </div>
+      </div>
+      </div>  
+        </div>
+      
+      </div>
 </div>
 
 <script>
@@ -220,9 +323,7 @@ department_id.onchange = function(){
 
 change_pwd.onclick = function(){
   var pwd = prompt("Введите новый пароль")
-    console.log(JSON.stringify({password: pwd}))
     if (pwd != null) {
-      console.log(document.querySelector("meta[name=csrf-token]").content)
       fetch("<%= root_url %>" + `set_new_pwd`, {
         method: 'POST',
         headers: {'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content, 'Content-Type':'application/json'},
@@ -233,9 +334,98 @@ change_pwd.onclick = function(){
         item.textContent = text
       })
 
-//    fetch("<%= root_url %>" + `set_new_pwd`, {password: pwd}).then(data => data.text()).then(text => console.log(text))
+//    fetch("<%= root_url %>" + `set_new_pwd`, {password: pwd}).then(data => data.text()).then(text => console.log('asdsd'))
     } 
 }
+
+
+
+
+delete_flush.onclick = function(e){
+  e.preventDefault()
+  delete_parz_even.checked = false
+  delete_parz_odd.checked = false
+}
+
+delete_parz_even_label.onclick = function(){
+  delete_parz_even.checked = true
+}
+delete_parz_odd_label.onclick = function(){
+  delete_parz_odd.checked = true
+}
+
+delete_faculty_id.onchange = function(){
+    let faculty_id = this.value
+    if (faculty_id && faculty_id != ''){
+        fetch("<%= root_url %>" + `get_departments_by_faculty?faculty_id=${faculty_id}`)
+            .then(response => response.json())
+            .then(data => data.map(department => {
+
+                let select = document.getElementById('delete_group_id')
+                let l = select.children.length
+                if (l > 1){
+                    for(let i = 1; i < l; i++){
+                        select.children[i].remove()
+                    }
+                }
+                
+                select = document.getElementById('delete_department_id')
+                l = select.children.length
+                if (l > 1){
+                    for(let i = 1; i < l; i++){
+                        select.children[i].remove()
+                    }
+                }
+                
+                let option = document.createElement("option")
+                option.text = department.name
+                option.value = department.id
+                delete_department_id.add(option)
+            }))
+    }
+    else{
+      let select = document.getElementById('delete_group_id')
+        let l = select.children.length
+        if (l > 1){
+            for(let i = 1; i < l; i++){
+                select.children[i].remove()
+            }
+        }
+        
+        select = document.getElementById('delete_department_id')
+        l = select.children.length
+        if (l > 1){
+            for(let i = 1; i < l; i++){
+                select.children[i].remove()
+            }
+        }
+        
+    }
+}
+delete_department_id.onchange = function(){
+    let department_id = this.value
+    if (department_id && department_id != ''){
+        fetch("<%= root_url %>" + `get_groups_by_department?department_id=${department_id}`)
+            .then(response => response.json())
+            .then(data => data.map(group => {
+                let option = document.createElement("option")
+                option.text = `${group.name}${group.number}`
+                option.value = group.id
+                delete_group_id.add(option)
+            }))
+    }
+    else{
+        let select = document.getElementById('delete_group_id')
+        let l = select.children.length
+        if (l > 1){
+            for(let i = 1; i < l; i++){
+                select.children[i].remove()
+            }
+        }
+        
+    }
+}
+
 
 
 </script>

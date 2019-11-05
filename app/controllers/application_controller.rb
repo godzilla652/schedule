@@ -1,10 +1,9 @@
 class ApplicationController < ActionController::Base
   before_action :check_user, except: [:public, :public_final, :login, :login_proc, :get_departments_by_faculty, :get_groups_by_department, :test]
   
-def test
-  p '#'*50
-  puts "#{root_url}"
-  p '#'*50
+def quit
+  cookies.signed[:schedule] = nil
+  redirect_to root_url
 end  
 
   def public
@@ -33,7 +32,7 @@ end
   end
   def login_proc
     if User.where(name: 'admin').first.authenticate(params[:password])
-      cookies.signed[:schedule] = 'admin'
+      cookies.signed[:schedule] = {value: 'admin', expires: Time.now + 1.week}
       redirect_to '/admin'
     elsif
       flash[:notice] = 'Вы не авторизированы'
@@ -42,6 +41,7 @@ end
   end
 
   def admin
+    cookies.signed[:schedule] = {value: 'admin', expires: Time.now + 1.week}
     
     @groups = Group.all.collect {|t| [t.fullname, t.id]}
     @days = Day.all.collect {|t| [t.name, t.id]}
@@ -140,6 +140,41 @@ end
     end
     redirect_to '/admin'
   end
+
+  def delete_schedule
+    if !params[:delete_faculty_id].empty? && !params[:delete_faculty_id].empty? && !params[:delete_group_id].empty? && !params[:delete_day_id].empty? && !params[:delete_clock_id].empty?
+      res = Schedul.where(group_id: params[:delete_group_id], day_id: params[:delete_day_id], clock_id: params[:delete_clock_id])
+      if !res.empty?
+        res.first.destroy
+        flash[:delete_success] = 'Успешно удалено'
+      else
+        flash[:delete_error] = 'Отсутствует в базе'
+      end
+    elsif !params[:delete_faculty_id].empty? && !params[:delete_faculty_id].empty? && !params[:delete_group_id].empty? && !params[:delete_day_id].empty? && !params[:delete_clock_id].empty? && params[:delete_parz] == 'even'
+      res = Schedul.where(group_id: params[:delete_group_id], day_id: params[:delete_day_id], clock_id: params[:delete_clock_id], even: true)
+      if !res.empty?
+        res.first.destroy
+        flash[:delete_success] = 'Успешно удалено'
+      else
+        flash[:delete_error] = 'Отсутствует в базе'
+      end
+    elsif !params[:delete_faculty_id].empty? && !params[:delete_faculty_id].empty? && !params[:delete_group_id].empty? && !params[:delete_day_id].empty? && !params[:delete_clock_id].empty? && params[:delete_parz] == 'odd'
+      res = Schedul.where(group_id: params[:delete_group_id], day_id: params[:delete_day_id], clock_id: params[:delete_clock_id], odd: true)
+      if !res.empty?
+        res.first.destroy
+        flash[:delete_success] = 'Успешно удалено'
+      else
+        flash[:delete_error] = 'Отсутствует в базе'
+      end
+    else
+      flash[:delete_error] = 'Обнаружены пустые поля'
+    end
+    
+    
+    redirect_to '/admin'
+  end
+
+
 
   private
   def check_user
