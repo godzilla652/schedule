@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   get '/test', to: 'application#test'
 
   root 'application#public'
+
   get '/admin', to: 'application#admin', as: 'admin'
   
   scope '/admin' do
